@@ -1,0 +1,10 @@
+cython
+setuptools
+datasets<4.0.0
+simplemma
+lxml
+hf_xet
+tqdm
+nltk
+python-dotenv
+numpy
