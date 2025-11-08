@@ -16,10 +16,6 @@ cdef class CMTS:
     cdef uint64_t _seed
     cdef BitVector _contador
     cdef uint32_t [:] _spire
-
-    cdef uint64_t[:] _offsets_camadas
-    cdef uint64_t[:] _offsets_arvores
-    cdef uint32_t[:] _offsets_camada_arvore
     
     cdef uint32_t _ler_contador(self, const uint32_t posicao_logica, const uint8_t camada)
     cdef void _escrever_contador(self, const uint32_t posicao_logica, const uint8_t camada, const uint32_t valor)

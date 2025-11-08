@@ -104,32 +104,6 @@ cdef class CMTS:
 
         # print(f"[CMTS] BitVector criado com sucesso")
 
-        self._offsets_camadas = array(shape=(self.profundidade,), itemsize=sizeof(uint64_t), format='=Q')
-        
-        cdef uint8_t i_camada
-        cdef uint32_t i_arvore
-
-        self._offsets_camadas[0] = 0
-        for i_camada in range(1, self.profundidade):
-            self._offsets_camadas[i_camada] = self._offsets_camadas[i_camada - 1] + self.largura * self._tamanho_arvore
-
-        # print(f"[CMTS] Offsets camadas calculados: {list(self._offsets_camadas)}")
-
-        # print(f"[CMTS] Criando array offsets_arvores com tamanho={self.largura}")
-        self._offsets_arvores = array(shape=(self.largura,), itemsize=sizeof(uint64_t), format='=Q')
-        self._offsets_arvores[0] = 0
-        
-        # print(f"[CMTS] Começando loop de offsets_arvores: range(1, {self.largura})")
-        cdef uint32_t count = 0
-        for i_arvore in range(1, self.largura):
-            count += 1
-            # if i_arvore % 100 == 0:
-                # print(f"[CMTS] Processando offset_arvore i={i_arvore}, count={count}")
-            self._offsets_arvores[i_arvore] = self._offsets_arvores[i_arvore - 1] + self._tamanho_arvore
-
-        # print(f"[CMTS] Loop completado! Total iterações: {count}")
-        # print(f"[CMTS] Offsets arvores calculados (primeiros 10): {list(self._offsets_arvores[:10])}")
-
         self._spire = array(shape=(self._quantidade_contadores,), itemsize=sizeof(uint32_t), format='=I')
 
         cdef uint64_t i_spire
@@ -166,31 +140,23 @@ cdef class CMTS:
         :obj:`int`
             Valor do contador.
         """
-        # print(f"[_ler_contador] pos_logica={posicao_logica}, camada={camada}")
-        
         cdef uint64_t contador = posicao_logica / self.base_arvore
         cdef uint64_t contador_arvore = posicao_logica % self.base_arvore
         
-        # print(f"[_ler_contador] contador={contador}, contador_arvore={contador_arvore}, largura={self.largura}")
-        
         if contador >= self.largura:
-            print(f"[_ler_contador] ERRO: contador={contador} >= largura={self.largura}")
             return 0
         
-        cdef uint64_t offset_arvore = self._offsets_arvores[contador]
-        cdef uint64_t offset_base = self._offsets_camadas[camada]
-
-        # print(f"[_ler_contador] offset_arvore={offset_arvore}, offset_base={offset_base}, tamanho_arvore={self._tamanho_arvore}")
-        # print(f"[_ler_contador] altura_arvore={self._altura_arvore}, tamanho_bit_total={self._tamanho_bit}")
+        cdef uint64_t offset_camada = camada * self.largura * self._tamanho_arvore
+        cdef uint64_t offset_arvore = contador * self._tamanho_arvore
 
         cdef uint64_t i = 0, b = 0, c = 0
         cdef uint64_t offset_camada_arvore = 0
         cdef uint64_t bits_camada = self.base_arvore * 2
         cdef uint64_t tpos = contador_arvore
         cdef uint64_t posicao
+        
         for i in range(self._altura_arvore):
-            posicao = offset_base + offset_arvore + offset_camada_arvore + tpos * 2
-            # print(f"[_ler_contador] Loop i={i}: posicao={posicao} (base={offset_base} + arv={offset_arvore} + cam={offset_camada_arvore} + tpos*2={tpos*2})")
+            posicao = offset_camada + offset_arvore + offset_camada_arvore + tpos * 2
 
             if self._contador[posicao + 1] == 0: 
                 if self._contador[posicao] == 1:
@@ -209,8 +175,6 @@ cdef class CMTS:
         if b == self._altura_arvore:
             c = (self._spire[contador + self.largura * camada] << b) + c
 
-
-        # print(f"[_ler_contador] valor={c + 2 * (((<uint64_t> 1) << b) - 1)}")
         return c + 2 * (((<uint64_t> 1) << b) - 1)
         
         
@@ -228,13 +192,10 @@ cdef class CMTS:
         valor : :obj:`int`
             Valor a ser escrito.
         """
-        # print(f"[_escrever_contador] pos_logica={posicao_logica}, camada={camada}, valor={valor}")
-        
         cdef uint64_t contador = posicao_logica / self.base_arvore
         cdef uint64_t contador_arvore = posicao_logica % self.base_arvore
         
         if contador >= self.largura:
-            # print(f"[_escrever_contador] ERRO: contador={contador} >= largura={self.largura}")
             return
 
         cdef uint64_t x = (valor + 2) / 4
@@ -243,16 +204,17 @@ cdef class CMTS:
         cdef uint64_t nb = self._altura_arvore if self._altura_arvore < valor_lsb else valor_lsb
         cdef uint64_t nc = valor - 2 * (((<uint64_t>1) << nb) - 1)
 
-        cdef uint64_t offset_arvore = self._offsets_arvores[contador]
-        cdef uint64_t offset_base = self._offsets_camadas[camada]
+        cdef uint64_t offset_camada = camada * self.largura * self._tamanho_arvore
+        cdef uint64_t offset_arvore = contador * self._tamanho_arvore
 
         cdef uint64_t i = 0
         cdef uint64_t offset_camada_arvore = 0
         cdef uint64_t bits_camada = self.base_arvore * 2
         cdef uint64_t tpos = contador_arvore
         cdef uint64_t posicao
+        
         for i in range(min(nb + 1, self._altura_arvore)):
-            posicao = offset_base + offset_arvore + offset_camada_arvore + tpos * 2
+            posicao = offset_camada + offset_arvore + offset_camada_arvore + tpos * 2
             
             # Sempre escreve counting
             self._contador[posicao] = (nc % 2) != 0
@@ -400,8 +362,6 @@ cdef class CMTS:
         total += sizeof(uint64_t)  # _seed
         total += self._contador.sizeof()  # BitVector
         total += self._quantidade_contadores * sizeof(uint32_t)  # _spire
-        total += self.profundidade * sizeof(uint64_t)  # _offsets_camadas
-        total += self.largura * sizeof(uint64_t)  # _offsets_arvores
         return total
 
     cpdef dict memoria(self):
@@ -414,16 +374,12 @@ cdef class CMTS:
         """
         cdef size_t bitvector_bytes = self._contador.sizeof()
         cdef size_t spire_bytes = self._quantidade_contadores * sizeof(uint32_t)
-        cdef size_t offsets_camadas_bytes = self.profundidade * sizeof(uint64_t)
-        cdef size_t offsets_arvores_bytes = self.largura * sizeof(uint64_t)
         cdef size_t variaveis_bytes = sizeof(uint32_t) + sizeof(uint8_t) + sizeof(uint8_t) + sizeof(uint8_t) + sizeof(uint64_t) + sizeof(uint64_t) + sizeof(uint64_t) + sizeof(uint64_t)
-        cdef size_t total_bytes = bitvector_bytes + spire_bytes + offsets_camadas_bytes + offsets_arvores_bytes + variaveis_bytes
+        cdef size_t total_bytes = bitvector_bytes + spire_bytes + variaveis_bytes
         
         return {
             'bitvector': bitvector_bytes,
             'spire': spire_bytes,
-            'offsets_camadas': offsets_camadas_bytes,
-            'offsets_arvores': offsets_arvores_bytes,
             'variaveis': variaveis_bytes,
             'total': total_bytes
         }
