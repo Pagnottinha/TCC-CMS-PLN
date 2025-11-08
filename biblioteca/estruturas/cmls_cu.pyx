@@ -185,6 +185,7 @@ cdef class CMLS8CU:
 
         """
         cdef size_t total = 0
+        total += sizeof(uint8_t)   # _VALOR_MAXIMO_CONTADOR
         total += sizeof(uint32_t)  # largura
         total += sizeof(uint8_t)   # profundidade
         total += sizeof(double)    # base
@@ -202,7 +203,7 @@ cdef class CMLS8CU:
             Dicionário com informações de memória em bytes.
         """
         cdef size_t contador_bytes = self._tamanho * sizeof(uint8_t)
-        cdef size_t variaveis_bytes = sizeof(uint32_t) + sizeof(uint8_t) + sizeof(double) + sizeof(uint64_t) + sizeof(uint64_t)
+        cdef size_t variaveis_bytes = sizeof(uint8_t) + sizeof(uint32_t) + sizeof(uint8_t) + sizeof(double) + sizeof(uint64_t) + sizeof(uint64_t)
         cdef size_t total_bytes = contador_bytes + variaveis_bytes
         
         return {

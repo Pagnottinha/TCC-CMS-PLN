@@ -343,11 +343,13 @@ cdef class CL:
         total += sizeof(uint32_t)  # largura
         total += sizeof(uint8_t)   # profundidade
         total += sizeof(uint8_t)   # expansao
+        total += sizeof(uint8_t)   # modo
         total += sizeof(uint64_t)  # _tamanho
         total += sizeof(uint64_t)  # _seed
         total += self._tamanho * sizeof(uint32_t)  # _contador
         total += self.profundidade * sizeof(uint64_t)  # _offsets_camadas
         total += self.profundidade * sizeof(uint64_t)  # _largura_camada
+        total += self.profundidade * sizeof(uint32_t)  # _maximo_camada
         return total
 
     cpdef dict memoria(self):
@@ -361,13 +363,15 @@ cdef class CL:
         cdef size_t contador_bytes = self._tamanho * sizeof(uint32_t)
         cdef size_t offsets_camadas_bytes = self.profundidade * sizeof(uint64_t)
         cdef size_t largura_camada_bytes = self.profundidade * sizeof(uint64_t)
-        cdef size_t variaveis_bytes = sizeof(uint32_t) + sizeof(uint8_t) + sizeof(uint8_t) + sizeof(uint64_t) + sizeof(uint64_t)
-        cdef size_t total_bytes = contador_bytes + offsets_camadas_bytes + largura_camada_bytes + variaveis_bytes
+        cdef size_t maximo_camada_bytes = self.profundidade * sizeof(uint32_t)
+        cdef size_t variaveis_bytes = sizeof(uint32_t) + sizeof(uint8_t) + sizeof(uint8_t) + sizeof(uint8_t) + sizeof(uint64_t) + sizeof(uint64_t)
+        cdef size_t total_bytes = contador_bytes + offsets_camadas_bytes + largura_camada_bytes + maximo_camada_bytes + variaveis_bytes
         
         return {
             'contador': contador_bytes,
             'offsets_camadas': offsets_camadas_bytes,
             'largura_camada': largura_camada_bytes,
+            'maximo_camada': maximo_camada_bytes,
             'variaveis': variaveis_bytes,
             'total': total_bytes
         }
