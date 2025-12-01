@@ -1,3 +1,3 @@
-"""Helper modules"""
+"""Módulos auxiliares."""
 
 __all__ = []

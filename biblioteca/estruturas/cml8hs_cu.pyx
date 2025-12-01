@@ -9,7 +9,7 @@ from libc.stddef cimport size_t
 from biblioteca.helpers.hash.city cimport cityhash_64bit
 
 
-cdef class CMLS8CUH:
+cdef class CML8HSCU:
     """Count-Min-Log Sketch Híbrido com Conservative Update
     
     Combinação de contadores lineares (32-bit) e logarítmicos (8-bit).
@@ -18,8 +18,8 @@ cdef class CMLS8CUH:
     
     Exemplo
     -------
-    >>> from biblioteca.estruturas import CMLS8CUH
-    >>> sketch = CMLS8CUH(largura=2000, profundidade=4, camadas_lineares=2, base=1.08, seed=42)
+    >>> from biblioteca.estruturas import CML8HSCU
+    >>> sketch = CML8HSCU(largura=2000, profundidade=4, camadas_lineares=2, base=1.08, seed=42)
     >>> sketch.incrementar("palavra")
     >>> freq = sketch.estimar("palavra")
 
@@ -303,15 +303,15 @@ cdef class CMLS8CUH:
         Parâmetros
         ----------
         nome_arquivo : str
-            Nome do arquivo (extensão .cmls8cuh adicionada automaticamente)
+            Nome do arquivo (extensão .cml8hscu adicionada automaticamente)
 
         """
         import struct
         
         cdef uint64_t i
         
-        if not nome_arquivo.endswith('.cmls8cuh'):
-            nome_arquivo += '.cmls8cuh'
+        if not nome_arquivo.endswith('.cml8hscu'):
+            nome_arquivo += '.cml8hscu'
         
         with open(nome_arquivo, 'wb') as f:
             # Escrever cabeçalho: largura (4 bytes), profundidade (1 byte), camadas_lineares (1 byte), base (8 bytes), seed (8 bytes)
@@ -330,11 +330,11 @@ cdef class CMLS8CUH:
         Parâmetros
         ----------
         nome_arquivo : str
-            Nome do arquivo (extensão .cmls8cuh adicionada automaticamente)
+            Nome do arquivo (extensão .cml8hscu adicionada automaticamente)
 
         Retorna
         -------
-        CMLS8CUH
+        CML8HSCU
             Sketch reconstruído com todos os contadores
 
         """
@@ -342,8 +342,8 @@ cdef class CMLS8CUH:
         
         cdef uint64_t i
         
-        if not nome_arquivo.endswith('.cmls8cuh'):
-            nome_arquivo += '.cmls8cuh'
+        if not nome_arquivo.endswith('.cml8hscu'):
+            nome_arquivo += '.cml8hscu'
         
         with open(nome_arquivo, 'rb') as f:
             # Ler cabeçalho (4 + 1 + 1 + 8 + 8 = 22 bytes)
@@ -351,7 +351,7 @@ cdef class CMLS8CUH:
             largura, profundidade, camadas_lineares, base, seed = struct.unpack('=IBBdQ', header)
             
             # Criar novo sketch
-            cmls = CMLS8CUH(largura, profundidade, camadas_lineares, base, seed)
+            cmls = CML8HSCU(largura, profundidade, camadas_lineares, base, seed)
             
             # Ler array de contadores
             for i in range(cmls._tamanho_linear):
@@ -365,7 +365,7 @@ cdef class CMLS8CUH:
             return cmls
 
     def __repr__(self):
-        return "<CMLS8CUH ({} x {}) {} base {}>".format(
+        return "<CML8HSCU ({} x {}) {} base {}>".format(
             self.largura,
             self.profundidade,
             self.base,

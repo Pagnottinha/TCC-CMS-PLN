@@ -1,11 +1,9 @@
-"""
-Estruturas de dados probabilísticas
-"""
+"""Estruturas de dados probabilísticas."""
 
 from .cms_cu import CMSCU
-from .cmls_cu import CMLS8CU
-from .cmls_cu_h import CMLS8CUH
+from .cml8s_cu import CML8SCU
+from .cml8hs_cu import CML8HSCU
 from .cl import CL
 from .cmts import CMTS
 
-__all__ = ['CMSCU', 'CMLS8CU', 'CMLS8CUH', 'CL', 'CMTS']
+__all__ = ['CMSCU', 'CML8SCU', 'CML8HSCU', 'CL', 'CMTS']

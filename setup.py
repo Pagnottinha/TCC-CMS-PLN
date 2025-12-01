@@ -15,7 +15,6 @@ PACKAGES = [
     'biblioteca.helpers'
 ]
 
-# python setup.py build_ext --inplace
 def setup_package():
     root = os.path.abspath(os.path.dirname(__file__))
 
@@ -67,9 +66,9 @@ def setup_package():
     )
     extensions.append(
         Extension(
-            "biblioteca.estruturas.cmls_cu",
+            "biblioteca.estruturas.cml8s_cu",
             language='c',
-            sources=[os.path.join('biblioteca', 'estruturas', 'cmls_cu.pyx')],
+            sources=[os.path.join('biblioteca', 'estruturas', 'cml8s_cu.pyx')],
             include_dirs=[
                 get_path("include"),
             ]
@@ -77,9 +76,9 @@ def setup_package():
     )
     extensions.append(
         Extension(
-            "biblioteca.estruturas.cmls_cu_h",
+            "biblioteca.estruturas.cml8hs_cu",
             language='c',
-            sources=[os.path.join('biblioteca', 'estruturas', 'cmls_cu_h.pyx')],
+            sources=[os.path.join('biblioteca', 'estruturas', 'cml8hs_cu.pyx')],
             include_dirs=[
                 get_path("include"),
             ]

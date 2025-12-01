@@ -1,7 +1,7 @@
 from libc.stdint cimport uint64_t, uint32_t, uint8_t
 
 
-cdef class CMLS8CUH:
+cdef class CML8HSCU:
     cdef uint8_t _VALOR_MAXIMO_CONTADOR_LOGARITMICO
     cdef uint32_t _VALOR_MAXIMO_CONTADOR_LINEAR
 

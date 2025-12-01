@@ -1,76 +1,25 @@
-"""BitVector.
-
-BitVector is an array of C++ BitFields (8 bits long) that
-supports flatten navigation.
-"""
+"""Vetor de bits baseado em BitFields C++."""
 
 import cython
-
-from libc.math cimport ceil
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
-
 
 cdef uint8_t BITFIELD_BITSIZE = sizeof(BitField) * 8
 
 cdef class BitVector:
-    """Implementation of a bit vector.
-
-    In fact, the bit vector is an array of C++ BitFields (8 bits long)
-    that supports flatten navigation.
-
-    Example
-    -------
-
-    >>> from pdsa.helpers.storage.bitvector import BitVector
-
-    >>> bv = BitVector(48)
-    >>> bv[37] = 1
-    >>> print(bv[37])
-
-
-    Attributes
-    ----------
-    length : :obj:`int`
-        The length of the vector's index space.
-    size : :obj:`int`
-        The size of the array of BitFields.
-    vector : obj
-        The array of BitFields.
-
-    """
+    """Vetor de bits com navegação flat."""
     __slots__ = ()
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
     @cython.cdivision(True)
     def __cinit__(self, const size_t length):
-        """Allocate and initialize a bit vector.
-
-        Parameters
-        ----------
-        length : int
-            The length of the vector.
-
-        Note
-        ----
-            It allocates space in blocks of 8 bits (byte, size of BitField),
-            therefore the length of the vector can be rounded up to
-            efficiently use the allocated memory.
-
-        Note
-        ----
-            It's guaranteed that all bits in newly created structure will
-            be cleared (set to 0).
-
-        """
+        """Aloca e inicializa o vetor de bits."""
         if length < 1:
             raise ValueError("Length can't be 0 or negative")
 
-        # Calcula alinhamento de forma segura
-        cdef size_t length_sz = <size_t>length
         cdef size_t mask = <size_t>(BITFIELD_BITSIZE - 1)
-        cdef size_t align = (mask - ((length_sz - 1) & mask))
-        self.length = length_sz + align
+        cdef size_t align = (mask - ((length - 1) & mask))
+        self.length = length + align
         self.size = self.length // BITFIELD_BITSIZE
 
         self.vector = <BitField *>PyMem_Malloc(self.size * sizeof(BitField))
@@ -84,24 +33,7 @@ cdef class BitVector:
     @cython.wraparound(False)
     @cython.cdivision(True)
     def __getitem__(self, const size_t index):
-        """Get element (bit value) by the index.
-
-        Parameters
-        ----------
-        index : int
-            The index of the element in the vector.
-
-        Returns
-        -------
-        :obj:`bool`
-            True if bit is set, False otherwise.
-
-        Raises
-        ------
-        IndexError
-            If `index` is out of range.
-
-        """
+        """Retorna o bit no índice especificado."""
         if index >= self.length:
             raise IndexError("Index {} out of range".format(index))
 
@@ -117,19 +49,7 @@ cdef class BitVector:
     @cython.wraparound(False)
     @cython.cdivision(True)
     def __setitem__(self, const size_t index, const bint flag):
-        """Set element (bit value) by the index.
-
-        Parameters
-        ----------
-        index : int
-            The index of the element in the vector.
-
-        Raises
-        ------
-        IndexError
-            If `index` is out of range.
-
-        """
+        """Define o bit no índice especificado."""
         if index >= self.length:
             raise IndexError("Index {} out of range".format(index))
 
@@ -151,38 +71,17 @@ cdef class BitVector:
         )
 
     def __len__(self):
-        """Get length of the vector's index space.
-
-        Returns
-        -------
-        :obj:`int`
-            The length of the vector's index space.
-
-        """
+        """Retorna o comprimento do vetor."""
         return self.length
 
     cpdef size_t sizeof(self):
-        """Size of the vector in bytes.
-
-        Returns
-        -------
-        :obj:`int`
-            Number of bytes allocated for the vector.
-
-        """
+        """Retorna o tamanho do vetor em bytes."""
         return self.size * sizeof(BitField)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
     cpdef size_t count(self):
-        """Count number of set bits in the vector.
-
-        Returns
-        -------
-        :obj:`int`
-            Number of set bits in the vector.
-
-        """
+        """Conta o número de bits setados."""
         cdef size_t num_of_bits = 0
 
         cdef size_t bucket
@@ -195,16 +94,9 @@ cdef class BitVector:
     @cython.boundscheck(False)
     @cython.wraparound(False)
     cpdef void salvar(self, object file_handle) except *:
-        """Salva o BitVector em um arquivo
-        
-        Parameters
-        ----------
-        file_handle : file
-            Arquivo aberto em modo binário para escrita
-        """
+        """Salva o vetor em arquivo binário."""
         import struct
         
-        # Escrever os bytes do BitField array
         cdef size_t bucket
         for bucket in range(self.size):
             file_handle.write(struct.pack('=B', self.vector[bucket].get_field()))
@@ -212,16 +104,9 @@ cdef class BitVector:
     @cython.boundscheck(False)
     @cython.wraparound(False)
     cpdef void carregar(self, object file_handle) except *:
-        """Carrega o BitVector de um arquivo
-        
-        Parameters
-        ----------
-        file_handle : file
-            Arquivo aberto em modo binário para leitura
-        """
+        """Carrega o vetor de arquivo binário."""
         import struct
         
-        # Ler os bytes do BitField array
         cdef size_t bucket
         cdef bytes data
         for bucket in range(self.size):

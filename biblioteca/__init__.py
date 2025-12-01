@@ -1,4 +1,4 @@
-"""Biblioteca de estruturas de dados probabilísticas para TCC-CMTS-IR"""
+"""Estruturas de dados probabilísticas."""
 
 __version__ = "0.1.0"
 

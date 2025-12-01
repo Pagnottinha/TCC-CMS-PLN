@@ -9,14 +9,14 @@ from libc.stddef cimport size_t
 from biblioteca.helpers.hash.city cimport cityhash_64bit
 
 
-cdef class CMLS8CU:
+cdef class CML8SCU:
     """
     Exemplo
     -------
 
     >>> from biblioteca.estruturas import CMSCU
 
-    >>> cms = CMLS8CU(2000, 4, 25)
+    >>> cms = CML8SCU(2000, 4, 25)
     >>> cms.add("ola")
     >>> cms.frequency("ola")
 
@@ -213,7 +213,7 @@ cdef class CMLS8CU:
         }
 
     cpdef void salvar(self, str nome_arquivo) except *:
-        """Salva o sketch em um arquivo .cmls8cu
+        """Salva o sketch em um arquivo .cml8scu
 
         Parâmetros
         ----------
@@ -225,8 +225,8 @@ cdef class CMLS8CU:
         
         cdef uint64_t i
         
-        if not nome_arquivo.endswith('.cmls8cu'):
-            nome_arquivo += '.cmls8cu'
+        if not nome_arquivo.endswith('.cml8scu'):
+            nome_arquivo += '.cml8scu'
         
         with open(nome_arquivo, 'wb') as f:
             # Escrever cabeçalho: largura (4 bytes), profundidade (1 byte), base (8 bytes), seed (8 bytes)
@@ -238,7 +238,7 @@ cdef class CMLS8CU:
 
     @staticmethod
     def carregar(str nome_arquivo):
-        """Carrega um sketch de um arquivo .cmls8cu
+        """Carrega um sketch de um arquivo .cml8scu
 
         Parâmetros
         ----------
@@ -247,7 +247,7 @@ cdef class CMLS8CU:
 
         Retorna
         -------
-        CMLS8CU
+        CML8SCU
             Sketch carregado do arquivo
 
         """
@@ -255,8 +255,8 @@ cdef class CMLS8CU:
         
         cdef uint64_t i
         
-        if not nome_arquivo.endswith('.cmls8cu'):
-            nome_arquivo += '.cmls8cu'
+        if not nome_arquivo.endswith('.cml8scu'):
+            nome_arquivo += '.cml8scu'
         
         with open(nome_arquivo, 'rb') as f:
             # Ler cabeçalho (4 + 1 + 8 + 8 = 21 bytes)
@@ -264,7 +264,7 @@ cdef class CMLS8CU:
             largura, profundidade, base, seed = struct.unpack('=IBdQ', header)
             
             # Criar novo sketch
-            cmls = CMLS8CU(largura, profundidade, base, seed)
+            cmls = CML8SCU(largura, profundidade, base, seed)
             
             # Ler array de contadores
             for i in range(cmls._tamanho):
@@ -274,7 +274,7 @@ cdef class CMLS8CU:
             return cmls
 
     def __repr__(self):
-        return "<CMLS8CU ({} x {}) {} base>".format(
+        return "<CML8SCU ({} x {}) {} base>".format(
             self.largura,
             self.profundidade,
             self.base

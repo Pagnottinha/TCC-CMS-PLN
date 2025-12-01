@@ -1,4 +1,4 @@
-"""Hash functions module"""
+"""Funções de hash."""
 
 from .city import cityhash_64bit
 
