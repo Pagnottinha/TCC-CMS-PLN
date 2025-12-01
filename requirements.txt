@@ -5,6 +5,8 @@ simplemma
 lxml
 hf_xet
 tqdm
-nltk
 python-dotenv
 numpy
+matplotlib
+scipy
+seaborn
