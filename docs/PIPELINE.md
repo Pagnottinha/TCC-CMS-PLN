@@ -2,7 +2,7 @@
 
 Este documento descreve o pipeline completo de processamento do corpus e execução de benchmarks.
 
-## 📋 Visão Geral
+## Visão Geral
 
 O pipeline consiste em 4 etapas principais:
 
@@ -17,7 +17,7 @@ O pipeline consiste em 4 etapas principais:
 
 ---
 
-## 1️⃣ Preparação do Corpus
+## Preparação do Corpus
 
 **Script:** `corpus.py`
 
@@ -65,7 +65,7 @@ python corpus.py
 
 ---
 
-## 2️⃣ Tokenização e Normalização
+## Tokenização e Normalização
 
 **Script:** `tokenizar_corpus.py`
 
@@ -157,7 +157,7 @@ n_process = 1             # Processos paralelos
 
 ---
 
-## 3️⃣ Benchmark de Estruturas
+## Benchmark de Estruturas
 
 **Script:** `benchmark_estruturas.py`
 
@@ -244,7 +244,7 @@ python benchmark_estruturas.py
 
 ---
 
-## 4️⃣ Análise de Resultados
+## Análise de Resultados
 
 ### Análise do Corpus Tokenizado
 
@@ -286,7 +286,7 @@ Analisa como o erro varia com a frequência dos elementos.
 
 ---
 
-## ⚙️ Configuração
+## Configuração
 
 ### Variáveis de Ambiente (.env)
 
@@ -320,7 +320,7 @@ CONFIGS_PADRAO = {
 
 ---
 
-## 📊 Métricas de Saída
+## Métricas de Saída
 
 ### relatorio_completo.json
 
@@ -351,7 +351,7 @@ CONFIGS_PADRAO = {
 
 ---
 
-## 🔄 Fluxo de Dados
+## Fluxo de Dados
 
 ```
 Carolina Corpus (HuggingFace)
