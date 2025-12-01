@@ -25,7 +25,6 @@ TCC-CMS-PLN/
 │   └── tokenizado/          # Partes tokenizadas
 ├── analise_resultados/      # Resultados das análises (gráficos)
 ├── resultados_benchmark/    # Resultados do benchmark
-├── main.py                  # Script principal
 ├── corpus.py                # Preparação do corpus
 ├── tokenizar_corpus.py      # Pipeline de tokenização
 ├── benchmark_estruturas.py  # Execução de benchmarks
